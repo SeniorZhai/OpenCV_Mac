@@ -54,9 +54,12 @@ int main(int argc, const char * argv[]) {
     Mat logo = imread("/Users/zhai/Downloads/logo.jpg",3);
     namedWindow("Logo Image",WINDOW_AUTOSIZE);
     
+
     Mat imgROI = image(Rect(10,10,logo.cols,logo.rows));
 
-    addWeighted(imgROI,1,logo,1,0,imgROI);
+    // 叠加 掩膜 必须是灰度图
+    Mat mask = imread("/Users/zhai/Downloads/logo.jpg",0);
+    logo.copyTo(imgROI,mask);
     
     imshow("Log Image", image);
     waitKey(0);
