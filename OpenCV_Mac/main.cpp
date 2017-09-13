@@ -8,60 +8,59 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
+#include <opencv2/highgui/highgui_c.h>
 
 using namespace cv;
+using namespace std;
+
+Mat src;
+Mat src_gray;
+int thresh = 100;
+int max_thresh = 255;
+RNG rng(12345);
+
+void thresh_callback(int,void*);
+
 int main(int argc, const char * argv[]) {
+    src = imread("/Users/zhai/Downloads/avater.png",1);
+    // 灰度
+    cvtColor(src, src_gray, CV_BGR2GRAY );
+    // 模糊
+    blur(src_gray, src_gray, Size(3,3));
     
-    // Mat是用于保存图像以及其矩阵数据的数据结构
+    namedWindow("Source",CV_WINDOW_AUTOSIZE);
+    imshow("Source", src);
     
-    Mat image;
-    image = imread("/Users/zhai/Downloads/avater.png",1);
-    /*
-     imread函数 Mat imread(const string& filename, int flags =1);
-     第一个参数是文件路径
-     第二个参数是图像的颜色类型
-     CV_LOAD_IMAGE_UNCHANGED = -1 // 废弃
-     CV_LOAD_IMAGE_GRATSCALE = 0 // 灰度
-     CV_LOAD_IMAGE_COLOR = 1 // default
-     CV_LOAD_IMAGE_ANYDEPTH = 2 若载入的图像深度为16或32位，返回对应图像，否则转换成8位返回
-     CV_LOAD_IMAGE_ANYCOLOR = 4
-     flags > 0返回3通道彩色图像
-     flags = 0返回灰度图像
-     flags < 0返回包含Alpha通道的图像
-     */
-    namedWindow("Display Image",WINDOW_AUTOSIZE);
-    /*
-     void nameWindow(const string& winname,int flags=WINDOW_AUTOSIZE);
-     flags   WINDOW_NORMAL可改变大小
-     WINDOW_AUTOSIZE适应图像大小
-     WINDOW_OPENGL支持OpenGL
-     destroyWindow()或者destroyAllWindows()函数可以关闭窗口
-     */
-    imshow("Display Image", image);
-    /*
-     void imshow(const string& winname,InputArray mat);
-     显示图像
-     */
-    /*
-     bool imwrite(const string& filename,InputArray img,const vector<int>& params = vector<int>());
-     输出图像到文件
-     第三个参数是采参数编码
-     对于JPEG格式，参数是0到100的图片质量(CV_IMWRITE_JPEG_QUALITY)，默认值是95
-     对于PNG，参数是压缩等级0到9(CV_IMWRITE_PNG_COMPRESSION)，默认是3
-     对于PPM、PGM、PBM表示0或1的二进制标志(CV_IMWRITE_PXM_BINARY)
-     */
-    // 注意作为logo需要alpha通道
-    Mat logo = imread("/Users/zhai/Downloads/logo.jpg",3);
-    namedWindow("Logo Image",WINDOW_AUTOSIZE);
+    // 创建滑竿
+    createTrackbar("Canny", "Source", &thresh, max_thresh,thresh_callback);
+    thresh_callback(0,0);
     
-
-    Mat imgROI = image(Rect(10,10,logo.cols,logo.rows));
-
-    // 叠加 掩膜 必须是灰度图
-    Mat mask = imread("/Users/zhai/Downloads/logo.jpg",0);
-    logo.copyTo(imgROI,mask);
-    
-    imshow("Log Image", image);
     waitKey(0);
     return 0;
 }
+
+void thresh_callback(int,void*){
+    Mat canny_output;
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+    Canny(src_gray, canny_output, thresh, thresh*2,3);
+    /**
+        void findContours(InputOutputArray image,OutputArrayOfArrays contours,int mode, int method,Point offset = Point());
+        void findContours(InputOutputArray image,OutputArrayOfArrays contours,OutputArray hierarchy,int mode,int method,Point offset = Point());
+        contours是找到的轮廓
+        mode CV_RETR_EXTERNAL 找到的轮廓里面没有小轮廓 CV_RETR_LIST找到的轮廓可以包括小轮廓
+        hierarchy 层次结构，存放轮廓统一登记的前后轮廓的索引
+        method CV_CHAIN_APPROX_NONE获取轮廓所有像素点
+      */
+    findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,Point(0,0));
+    Mat drawing = Mat::zeros(canny_output.size(), CV_8SC3);
+    for(int i = 0;i<contours.size();i++){
+        Scalar color = Scalar(rng.uniform(0, 255),rng.uniform(0, 255),rng.uniform(0, 255));
+        drawContours(drawing, contours, i, color,2,8,hierarchy,0,Point());
+    }
+    namedWindow("Contours",CV_WINDOW_AUTOSIZE);
+    imshow("Contours", drawing);
+}
+
+
