@@ -12,17 +12,17 @@
 using namespace cv;
 
 int main(int argc, const char * argv[]) {
-
-    VideoCapture capture("/Users/zhai/Desktop/25.mp4");
+    // 调用摄像头
+    VideoCapture capture(0);
     /*
      VideoCapture capture;
-     capture.open("");
+     capture.open(0);
      **/
     while(1){
         Mat frame;
         // 取当前帧
         capture>>frame;
-        imshow("video", frame);
+        imshow("camera", frame);
         waitKey(20);
     }
     return 0;
