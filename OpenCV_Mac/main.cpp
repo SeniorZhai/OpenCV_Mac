@@ -8,23 +8,23 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <opencv2/imgproc/imgproc_c.h>
 
 using namespace cv;
 
 int main(int argc, const char * argv[]) {
 
-    Mat srcImage = imread("/Users/zhai/Downloads/avater.png");
-    imshow("Source",srcImage);
-    Mat dstImage;
-    dstImage.create(srcImage.size(), srcImage.type());
-    Mat grayImage;
-    cvtColor(srcImage, grayImage, COLOR_RGB2GRAY);
-    Mat edge;
-    blur(grayImage, edge, Size(3,3));
-    Canny(edge, edge, 3, 9, 3);
-    imshow("Canny",edge);
-    waitKey(0);
+    VideoCapture capture("/Users/zhai/Desktop/25.mp4");
+    /*
+     VideoCapture capture;
+     capture.open("");
+     **/
+    while(1){
+        Mat frame;
+        // 取当前帧
+        capture>>frame;
+        imshow("video", frame);
+        waitKey(20);
+    }
     return 0;
 }
 
