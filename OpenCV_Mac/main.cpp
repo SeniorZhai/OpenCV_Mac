@@ -17,9 +17,13 @@ int main(int argc, const char * argv[]) {
     Mat srcImage = imread("/Users/zhai/Downloads/avater.png");
     imshow("Source",srcImage);
     Mat dstImage;
-    // 模糊
-    blur(srcImage, dstImage, Size(7,7));
-    imshow("dst", dstImage);
+    dstImage.create(srcImage.size(), srcImage.type());
+    Mat grayImage;
+    cvtColor(srcImage, grayImage, COLOR_RGB2GRAY);
+    Mat edge;
+    blur(grayImage, edge, Size(3,3));
+    Canny(edge, edge, 3, 9, 3);
+    imshow("Canny",edge);
     waitKey(0);
     return 0;
 }
