@@ -18,12 +18,16 @@ int main(int argc, const char * argv[]) {
      VideoCapture capture;
      capture.open(0);
      **/
+    Mat edges;
     while(1){
         Mat frame;
         // 取当前帧
         capture>>frame;
-        imshow("camera", frame);
-        waitKey(20);
+        cvtColor(frame, edges, CV_BGR2GRAY);
+        blur(edges, edges, Size(7,7));
+        Canny(edges, edges, 0, 30,3);
+        imshow("camera", edges);
+        if(waitKey(20)>=0)break;
     }
     return 0;
 }
