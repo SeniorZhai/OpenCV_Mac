@@ -23,6 +23,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FD9E34411F7261F300627DBC /* avater.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = avater.png; sourceTree = "<group>"; };
 		FDF172FF1F615527006EDC10 /* OpenCV_Mac */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenCV_Mac; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDF173021F615527006EDC10 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -57,6 +58,7 @@
 		FDF173011F615527006EDC10 /* OpenCV_Mac */ = {
 			isa = PBXGroup;
 			children = (
+				FD9E34411F7261F300627DBC /* avater.png */,
 				FDF173021F615527006EDC10 /* main.cpp */,
 			);
 			path = OpenCV_Mac;
@@ -361,6 +363,7 @@
 				FDF173081F615527006EDC10 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
