@@ -1,35 +1,32 @@
-//
-//  main.cpp
-//  OpenCV_Mac
-//
-//  Created by zhai on 2017/9/7.
-//  Copyright © 2017年 zhai. All rights reserved.
-//
-
-#include <iostream>
+#include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
 
 using namespace cv;
 
-int main(int argc, const char * argv[]) {
-    // 调用摄像头
-    VideoCapture capture(0);
-    /*
-     VideoCapture capture;
-     capture.open(0);
-     **/
-    Mat edges;
-    while(1){
-        Mat frame;
-        // 取当前帧
-        capture>>frame;
-        cvtColor(frame, edges, CV_BGR2GRAY);
-        blur(edges, edges, Size(7,7));
-        Canny(edges, edges, 0, 30,3);
-        imshow("camera", edges);
-        if(waitKey(20)>=0)break;
-    }
-    return 0;
+const int g_MaxAlphaValue = 100;
+int g_AlphaValueSlider;
+double g_dAlphaValue;
+double g_dBetaValue;
+
+Mat g_srcImage1;
+Mat g_srcImage2;
+Mat g_dstImage;
+
+void on_Trackbar(int, void *){
+    g_dAlphaValue = (double) g_AlphaValueSlider / g_MaxAlphaValue;
+    g_dBetaValue = 1 - g_dAlphaValue;
+    addWeighted(g_srcImage1, g_dAlphaValue, g_srcImage2, g_dBetaValue, 0, g_dstImage);
+    imshow("Image", g_dstImage);
 }
 
-
+int main( int argc, const char** argv )
+{
+    g_srcImage1 = imread("/Users/zhai/Downloads/v2-fbbc865715a58b45bdc5389352708c7c_b.png");
+    g_srcImage2 = imread("/Users/zhai/Downloads/v2-4caf39e430449fc10dc59eec83603de6_b.png");
+    g_AlphaValueSlider = 70;
+    namedWindow("Image",WINDOW_AUTOSIZE);
+    createTrackbar("", "Image", &g_AlphaValueSlider, g_MaxAlphaValue,on_Trackbar);
+    on_Trackbar(g_AlphaValueSlider, 0);
+    waitKey(0);
+    return 0;
+}
