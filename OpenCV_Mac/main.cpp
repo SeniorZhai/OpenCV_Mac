@@ -19,10 +19,9 @@ void on_Trackbar(int, void *){
     imshow("Image", g_dstImage);
 }
 
-int main( int argc, const char** argv )
-{
-    g_srcImage1 = imread("/Users/zhai/Downloads/v2-fbbc865715a58b45bdc5389352708c7c_b.png");
-    g_srcImage2 = imread("/Users/zhai/Downloads/v2-4caf39e430449fc10dc59eec83603de6_b.png");
+int main( int argc, const char** argv ){
+    g_srcImage1 = imread(argv[1]);
+    g_srcImage2 = imread(argv[2]);
     g_AlphaValueSlider = 70;
     namedWindow("Image",WINDOW_AUTOSIZE);
     createTrackbar("", "Image", &g_AlphaValueSlider, g_MaxAlphaValue,on_Trackbar);
