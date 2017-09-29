@@ -72,6 +72,10 @@
             argument = "/Users/zhai/Downloads/image2.jpeg"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/zhai/Downloads/logo.jpg"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
