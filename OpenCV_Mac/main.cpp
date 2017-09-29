@@ -6,15 +6,19 @@ using namespace std;
 
 int main( int argc, const char** argv ){
     Mat image1 = imread(argv[1]);
-    Mat imgae2 = imread(argv[2]);
-    /*
-     dst = src1 * alpha + src2 * alpha + gamma
-    addWeighted(<#InputArray src1#>, <#double alpha#>, <#InputArray src2#>, double beta, <#double gamma#>, <#OutputArray dst#>)
-     */
+    Mat imageROI;
+    vector<Mat> channels;
+    // 分离3个单通道图像
+    split(image1, channels);
+    
+    imshow("B", channels.at(0));
+    imshow("G", channels.at(1));
+    imshow("R", channels.at(2));
     
     Mat out;
-    addWeighted(image1, 0.5, imgae2, 0.5, 1, out);
-    imshow("weighted", out);
+    merge(channels, out);
+    
+    imshow("out", out);
     waitKey();
     return 0;
 }
