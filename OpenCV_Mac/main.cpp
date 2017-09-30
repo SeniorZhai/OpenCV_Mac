@@ -4,14 +4,13 @@
 using namespace cv;
 int g_value = 10;
 static void on_ValueChange(int , void *);
-
 Mat g_srcImgae,g_dstImage;
 
 int main( int argc, const char** argv ){
     g_srcImgae = imread(argv[1]);
     
     namedWindow("window");
-    createTrackbar("value","window", &g_value, 100,on_ValueChange);
+    createTrackbar("value","window", &g_value, 10,on_ValueChange);
     on_ValueChange(g_value,0);
   
     while (char(waitKey(1) != 'q')) {
@@ -22,7 +21,7 @@ int main( int argc, const char** argv ){
 
 static void on_ValueChange(int , void*){
     int size = g_value * 2 +1;
-    GaussianBlur(g_srcImgae, g_dstImage, Size(size,size), 0);
+    boxFilter(g_srcImgae, g_dstImage, -1, Size(size,size));
     imshow("window", g_dstImage);
 }
 
