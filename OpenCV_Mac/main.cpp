@@ -21,7 +21,7 @@ int main( int argc, const char** argv ){
 
 static void on_ValueChange(int , void*){
     int size = g_value * 2 +1;
-    boxFilter(g_srcImgae, g_dstImage, -1, Size(size,size));
+    blur(g_srcImgae, g_dstImage, Size(size,size));
     imshow("window", g_dstImage);
 }
 
