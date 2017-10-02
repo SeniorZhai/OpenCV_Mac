@@ -1,35 +1,44 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
-
+#include <opencv2/imgproc/imgproc_c.h>
 using namespace cv;
-int g_value = 10;
-static void on_ValueChange(int , void *);
-Mat g_srcImgae,g_dstImage;
+
 
 int main( int argc, const char** argv ){
-    g_srcImgae = imread(argv[1]);
+    Mat image = imread(argv[1]);
     
-    namedWindow("window");
-    createTrackbar("value","window", &g_value, 50,on_ValueChange);
-    on_ValueChange(g_value,0);
-  
-    while (char(waitKey(1) != 'q')) {
-    }
-
+    Mat element =  getStructuringElement(MORPH_RECT, Size(15,15));
+    
+    /*
+     利用基本的膨胀和腐蚀技术，执行高级形态变化
+     第三个参数是形态学运算的类型
+     MORPH_OPEN 开运算
+     MORPH_CLOSE 闭运算
+     MORPH_GRADIENT 形态学梯度
+     MORPH_TOPHAT 顶帽
+     MORPH_BLACKHAT 黑帽
+     MORPH_ERODE 腐蚀
+     MORPH_DILATE 膨胀
+     第三个参数是形态学运算内核
+     为NULL是个3*3诶和，一般使用getStructuringElement获取
+     常用MORPH_RECT MORPH_CROSS MORPH_ELLIPSE
+     第五个参数是锚点
+     第六个参数是迭代次数
+     第七个参数边界模式
+     第八个参数是边界为常数的边界值
+     */
+    
+    morphologyEx(image, image, MORPH_GRADIENT, element);
+    
+    imshow("image", image);
+    
+    waitKey();
+    
     return 0;
 }
 
-static void on_ValueChange(int , void*){
-    int size = g_value*2 + 1; // 孔径尺寸，必须是大于1的奇数
-    medianBlur(g_srcImgae, g_dstImage, size);
-    imshow("window", g_dstImage);
-}
 /*
-     中值滤波
-     核心思想是用像素领域灰度值的中值来替代该像素点的灰度值，该方法在去除脉冲噪声、椒盐噪声的同时又能保留图像的边缘细节
-     劣势是中值滤波是均值滤波的5倍以上
+     膨胀 求局部最大值
+     腐蚀 求局部最小值
  */
-/*
-     双边滤波
-     结合图像的空间临近度和像素值相似度的一种折中处理，同事考虑空域信息和灰度相似性，达到包边去噪的目的
- */
+
