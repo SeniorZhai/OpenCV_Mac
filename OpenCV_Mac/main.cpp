@@ -91,10 +91,83 @@ void thresholdOtsu(Mat src) {
     imshow("thre", dst);
 }
 
+/*
+ * 图像边缘是图像的重要特征，边缘通常是强度明显变化的像素点，
+ * 也可以是梯度较大或极大的地方
+ * 边缘检测通常有以下步骤
+ * 1、平滑滤波 减少噪点
+ * 2、锐化滤波 加强强度变化
+ * 3、边缘判定 梯度不为零的地方
+ * 4、边缘连结 将间断的边缘连结，同事去除假边缘
+ * 锐化时大致相同，划分一阶微分或二阶微分，
+ * 一阶微分较知名的有Prewitt算子、Sobel算子
+ * 二阶微分有Laplace算子，还有Canny边缘算法，
+ * 能找细致边缘的方法
+ */
+void edgeSobel(Mat src) {
+    Mat dst;
+    GaussianBlur(src, src, Size(3,3), 0, 0);
+    Mat grad_x, grad_y;
+    Mat abs_grad_x, abs_grad_y;
+    // ddepth 输入图的深度 x方向的微分阶数 y方向的微分阶数
+    // ksize 核心 必须为 1、3、5、7
+    // scale 缩放值 delta 偏移量
+    Sobel(src, grad_x,  CV_16S, 1, 0, 3, 1, 0, BORDER_DEFAULT);
+    // 计算输入图的各像素转成8位原图
+    convertScaleAbs(grad_x, abs_grad_x);
+    Sobel(src, grad_y, CV_16S, 0, 1, 3, 1, 0, BORDER_DEFAULT);
+    convertScaleAbs(grad_y, abs_grad_y);
+    Mat dst1,dst2;
+    addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, dst1);
+    threshold(dst1, dst2, 80, 255, THRESH_BINARY|THRESH_OTSU);
+    
+    imshow("sobel1", dst1);
+    imshow("sobel2", dst2);
+}
+
+void edgeScharr(Mat src) {
+    GaussianBlur(src, src, Size(3,3), 0, 0);
+    Mat grad_x, grad_y;
+    Mat abs_grad_x,abs_grad_y;
+    Scharr(src, grad_x, CV_16S, 1, 0, 1, 0,BORDER_DEFAULT);
+    convertScaleAbs(grad_x, abs_grad_x);
+    Scharr(src, grad_y, CV_16S, 0, 1, 1, 0,BORDER_DEFAULT);
+    convertScaleAbs(grad_y, abs_grad_y);
+    
+    Mat dst1,dst2;
+    addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, dst1);
+    threshold(dst1, dst2, 80, 255, THRESH_OTSU|THRESH_BINARY);
+    imshow("Scharr1", dst1);
+    imshow("Scharr2", dst2);
+}
+
+void edgeLaplace(Mat src) {
+    GaussianBlur(src, src, Size(3,3), 0, 0);
+    Mat dst1,dst2,dst3;
+    Laplacian(src, dst1, CV_16S, 3, 1, 0,BORDER_DEFAULT);
+    convertScaleAbs(dst1, dst2);
+    
+    threshold(dst2, dst3, 80, 255, THRESH_OTSU|THRESH_BINARY);
+    imshow("Laplacian_2", dst2);
+    imshow("Laplacian_3", dst3);
+}
+
+void edgeCanny(Mat src) {
+    GaussianBlur(src, src, Size(3,3), 0, 0);
+    Mat dst1, dst2;
+    Canny(src, dst1, 50, 150, 3);
+    threshold(dst1, dst2, 128, 255, THRESH_BINARY_INV);
+    imshow("Canny_1", dst1);
+    imshow("Canny_2", dst2);
+}
+
 int main( int argc, const char** argv ){
     Mat image = imread(argv[1],CV_LOAD_IMAGE_GRAYSCALE);
     
-    thresholdOtsu(image);
+//    edgeSobel(image);
+//    edgeScharr(image);
+//    edgeLaplace(image);
+    edgeCanny(image);
     
     waitKey();
     return 0;
