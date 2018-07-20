@@ -31,10 +31,30 @@ void warpAffineT(Mat image) {
     imshow("Affine_2", dst2);
 }
 
+/*
+ * 透视转换与仿射转换相似，只是多传入一个点，得到一个更完整的矩形
+ */
+void perspective(Mat src) {
+    Mat dst1 = Mat::zeros(src.rows, src.cols, src.type());
+    Point2f srcTri[4];
+    srcTri[0] = Point2f(0,0);
+    srcTri[1] = Point2f(src.cols,0);
+    srcTri[2] = Point2f(0,src.rows);
+    srcTri[3] = Point2f(src.cols,src.rows);
+    Point2f dstTri[4];
+    dstTri[0] = Point2f(0,src.rows*0.3);
+    dstTri[1] = Point2f(src.cols*0.8,0);
+    dstTri[2] = Point2f(src.cols*0.1,src.rows);
+    dstTri[3] = Point2f(src.cols,src.rows*0.8);
+    Mat warp_mat = getPerspectiveTransform(srcTri, dstTri);
+    warpPerspective(src,dst1,warp_mat,dst1.size());
+    imshow("p", dst1);
+}
+
 int main( int argc, const char** argv ){
     Mat image = imread(argv[1]);
     
-    warpAffineT(image);
+    perspective(image);
     
     waitKey();
     return 0;
