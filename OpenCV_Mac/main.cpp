@@ -51,10 +51,50 @@ void perspective(Mat src) {
     imshow("p", dst1);
 }
 
+/*
+ * threshold 固定阈值 所谓二值化是将影像进行区分，
+ * 分成我们感兴趣的部分(前景)和不感兴趣的部分(背景)
+ * 通常将某个强度当值分割的标准，这个强度就是threshold，
+ * 强度超过这个阈值的像素当做前景，反之就是背景
+ * 阈值一般分为固定阈值、自适应阈值
+ */
+
+/*
+ * double threshold(InputArray src,OutArray dst,double threshold,
+    double maxval,int type)
+ * thresh是阈值 maxval是二值化的最大值
+ * type 二值化操作形态
+ *  THRESH_BINARY 超过阈值设为最大 小于设为0
+ *  THRESH_BINARY_INV 超过阈值设为0 小于设为最大值
+ *  THRESH_TRUNC 超过阈值设为阈值 小于设为0
+ *  THRESH_TOZERO 超过阈值不变，小于设为0
+ *  THRESH_TOZERO_INV 超过阈值设为0，小于不变
+ */
+void gray(Mat src) {
+    Mat dst;
+    threshold(src, dst, 75, 255, THRESH_BINARY);
+    imshow("Binary", dst);
+}
+
+/*
+ * 自适应阈值算法
+ * Otsu流程
+ *  先计算影像直方图
+ *  把直方图大于阈值的像素分成一组，小于的分成另一组
+ *  分别计算这两组的内变异数，并把两组内变异数相加
+ *  将0~255依序当做阈值来计算组内异数和，总和值最小的就是结果阈值
+ * 实际使用只需要只要threshold最后的Type或THRESH_OTSU即可
+ */
+void thresholdOtsu(Mat src) {
+    Mat dst;
+    threshold(src, dst, 150, 255, THRESH_TOZERO|THRESH_OTSU);
+    imshow("thre", dst);
+}
+
 int main( int argc, const char** argv ){
-    Mat image = imread(argv[1]);
+    Mat image = imread(argv[1],CV_LOAD_IMAGE_GRAYSCALE);
     
-    perspective(image);
+    thresholdOtsu(image);
     
     waitKey();
     return 0;
